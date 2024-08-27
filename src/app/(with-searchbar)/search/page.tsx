@@ -1,4 +1,5 @@
 import BookItem from "@/components/book-item";
+import BookListSkeleton from "@/components/skeleton/book-list-skeleton";
 import { BookData } from "@/types";
 import { delay } from "@/util/delay";
 import { Suspense } from "react";
@@ -28,7 +29,10 @@ export default async function Page({
 }) {
   // suspense key 속성에 설정을 해주면 해당 변수가 바뀌면 서스펜스 실행됨(키 값이 바뀌면 리액트가 컴포넌트가 완전히 바뀌었다고 인식하도록 만듦)
   return (
-    <Suspense key={searchParams.q || ""} fallback={<div>Loading...</div>}>
+    <Suspense
+      key={searchParams.q || ""}
+      fallback={<BookListSkeleton count={3} />}
+    >
       <SearchResult q={searchParams.q || ""} />
     </Suspense>
   );
