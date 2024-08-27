@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
+### 1. 서스펜스(Suspense)와 스트리밍의 필요성
 
-## Getting Started
+#### 서스펜스의 매력
 
-First, run the development server:
+Suspense 컴포넌트는 비동기 작업이 완료될 때까지 로딩 상태를 표시하고, 작업이 완료되면 해당 콘텐츠를 렌더링할 수 있도록 해준다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+#### 스트리밍의 필요성
+
+인덱스 페이지가 스태틱 페이지(Static Page)로 설정되어 있으면, 빌드 타임에 모든 비동기 작업이 완료되어야 하므로 스트리밍을 사용해도 효과가 없다. 따라서 비동기적인 데이터 로딩을 처리하고 스트리밍의 장점을 살리려면 페이지를 다이나믹 페이지(Dynamic Page)로 변경해야 한다.
+
+### 2. 다이나믹 페이지로 변경하기
+
+다이나믹 페이지 설정 인덱스 페이지를 다이나믹 페이지로 설정하는 가장 쉬운 방법은
+
+```jsx
+export const dynamic = "force-dynamic";
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+을 사용하는 것이다. 이를 통해 페이지가 항상 동적으로 렌더링되도록 설정할 수 있다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. 비동기 컴포넌트에 딜레이 적용하기
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load Inter, a custom Google Font.
+#### 비동기 컴포넌트 구성(프로젝트 예시)
 
-## Learn More
+각각의 비동기 컴포넌트에 await delay 함수를 호출하여 딜레이를 적용한다.
+RecommendedBooks 컴포넌트에 3초(3000ms) 딜레이 적용.
+AllBooks 컴포넌트에 1.5초(1500ms) 딜레이 적용.
 
-To learn more about Next.js, take a look at the following resources:
+### 4. 서스펜스 컴포넌트로 감싸기
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Suspense 사용
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+RecommendedBooks와 AllBooks 컴포넌트를 Suspense 컴포넌트로 감싸고, fallback 프로퍼티를 이용하여 로딩 중임을 표시하는 메시지를 설정한다.
+예시: `<Suspense fallback={<div>도서를 불러오는 중입니다...</div>}>`
 
-## Deploy on Vercel
+### 5. 로딩과 렌더링 결과
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### 로딩 상태 관리
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+이제 브라우저에서 새로고침을 하면, Suspense 컴포넌트의 fallback으로 설정한 로딩 메시지가 먼저 나타난다. 그 후, 먼저 완료된 비동기 작업의 컴포넌트가 먼저 렌더링된다.
+예를 들어, AllBooks 컴포넌트(1.5초 딜레이)가 먼저 렌더링되고, 그 다음에 RecommendedBooks 컴포넌트(3초 딜레이)가 렌더링된다.
+
+### 6. 서스펜스의 장점
+
+#### 병렬 렌더링
+
+Suspense 컴포넌트를 사용하면, 페이지 내 **여러 컴포넌트를 병렬로 처리**하여 각각 완료되는 순서대로 렌더링할 수 있다. 이는 전체 페이지 로딩 시간을 줄이고 *사용자 경험을 향상*시킴.
+
+#### 범용적 활용
+
+Suspense 컴포넌트는 다양한 상황에서 범용적으로 사용될 수 있으며, 로딩 파일을 이용하는 방식보다 선호된다.
+
+### 7. 결론
+
+Suspense와 스트리밍을 통해 비동기적인 데이터 로딩 환경에서 사용자 경험을 크게 향상시킬 수 있다. 이를 통해 **병렬로 비동기 컴포넌트를 렌더링**하고, 각 컴포넌트가 준비되는 대로 사용자에게 표시할 수 있다.
