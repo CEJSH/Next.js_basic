@@ -1,12 +1,9 @@
 import { notFound } from "next/navigation";
 import style from "./page.module.css";
-
+import { createReviewAction } from "@/actions/create-review.action";
 /** 미리 정해둔 파라미터 외에 모두 404로 보내고 싶다면? */
 // export const dynamicParams = false;
 
-// export const dynamic = ''
-// 특정 페이지의 유형을 강제로 Static, Dynamic 페이지로 설정
-//2 . force-dynamic
 export function generateStaticParams() {
   return [{ id: "1" }, { id: "2" }, { id: "3" }];
 }
@@ -44,21 +41,13 @@ async function BookDetail({ bookId }: { bookId: string }) {
   );
 }
 
-function ReviewEditor() {
-  async function createReviewAction(formData: FormData) {
-    "use server";
-
-    const content = formData.get("content")?.toString();
-    const author = formData.get("author")?.toString();
-
-    console.log(content, author);
-  }
-
+function ReviewEditor({ bookId }: { bookId: string }) {
   return (
     <section>
       <form action={createReviewAction}>
-        <input type="text" name="content" placeholder="리뷰 내용" />
-        <input type="text" name="author" placeholder="작성자" />
+        <input name="bookId" type="text" value={bookId} hidden />
+        <input required type="text" name="content" placeholder="리뷰 내용" />
+        <input required type="text" name="author" placeholder="작성자" />
         <button type="submit">작성하기</button>
       </form>
     </section>
@@ -69,7 +58,7 @@ export default function Page({ params }: { params: { id: string } }) {
   return (
     <div className={style.container}>
       <BookDetail bookId={params.id} />
-      <ReviewEditor />
+      <ReviewEditor bookId={params.id} />
     </div>
   );
 }
