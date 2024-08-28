@@ -6,19 +6,15 @@ import style from "./page.module.css";
 
 // export const dynamic = ''
 // 특정 페이지의 유형을 강제로 Static, Dynamic 페이지로 설정
-// 1. 며새
 //2 . force-dynamic
 export function generateStaticParams() {
   return [{ id: "1" }, { id: "2" }, { id: "3" }];
 }
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string | string[] };
-}) {
+async function BookDetail({ bookId }: { bookId: string }) {
+  console.log("hey");
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${params.id}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`
   );
   if (!response.ok) {
     if (response.status === 404) {
@@ -31,7 +27,7 @@ export default async function Page({
     book;
 
   return (
-    <div className={style.container}>
+    <section>
       <div
         className={style.cover_img_container}
         style={{ backgroundImage: `url('${coverImgUrl}')` }}
@@ -44,6 +40,36 @@ export default async function Page({
         {author} | {publisher}
       </div>
       <div className={style.description}>{description}</div>
+    </section>
+  );
+}
+
+function ReviewEditor() {
+  async function createReviewAction(formData: FormData) {
+    "use server";
+
+    const content = formData.get("content")?.toString();
+    const author = formData.get("author")?.toString();
+
+    console.log(content, author);
+  }
+
+  return (
+    <section>
+      <form action={createReviewAction}>
+        <input type="text" name="content" placeholder="리뷰 내용" />
+        <input type="text" name="author" placeholder="작성자" />
+        <button type="submit">작성하기</button>
+      </form>
+    </section>
+  );
+}
+
+export default function Page({ params }: { params: { id: string } }) {
+  return (
+    <div className={style.container}>
+      <BookDetail bookId={params.id} />
+      <ReviewEditor />
     </div>
   );
 }
