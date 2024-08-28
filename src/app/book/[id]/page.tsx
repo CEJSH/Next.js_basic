@@ -12,9 +12,9 @@ export function generateStaticParams() {
 }
 
 async function BookDetail({ bookId }: { bookId: string }) {
-  console.log("hey");
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`,
+    { next: { tags: [`review-${bookId}`] } }
   );
   if (!response.ok) {
     if (response.status === 404) {
@@ -62,6 +62,7 @@ async function ReviewList({ bookId }: { bookId: string }) {
     </section>
   );
 }
+
 export default function Page({ params }: { params: { id: string } }) {
   return (
     <div className={style.container}>
